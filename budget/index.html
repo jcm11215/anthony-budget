@@ -24,7 +24,11 @@ button.x{background:transparent;color:var(--mut);padding:4px 8px;font-weight:400
 .fc>div{padding:10px 0;border-top:1px solid var(--line)}.fc>div:first-child{border-top:0}
 .fc .top{display:flex;justify-content:space-between;font-weight:600}
 .tabs{display:flex;gap:6px;margin-bottom:14px}.tabs button{flex:1;background:var(--card);color:var(--ink);border:1px solid var(--line);font-weight:500;padding:10px 4px}.tabs button.on{background:var(--acc);color:#fff;border-color:var(--acc)}
-.hide{display:none}
+#toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 14px;border-radius:10px;display:flex;gap:10px;align-items:center}#toast button{padding:6px 12px}
+.hide{display:none!important}
+.bigbtn{font-size:18px;padding:16px 10px}
+button.cancel{background:transparent;color:var(--mut);border:1px solid var(--line)}
+button:active{opacity:.8}
 </style>
 </head>
 <body>
@@ -37,57 +41,46 @@ button.x{background:transparent;color:var(--mut);padding:4px 8px;font-weight:400
   <p id="heroSub">Add your paychecks and bills to get started.</p>
 </div>
 
-<div class="tabs">
-  <button data-t="fc" class="on">Forecast</button>
-  <button data-t="bills">Bills</button>
-  <button data-t="pay">Paychecks</button>
+<div class="row">
+  <button class="bigbtn" onclick="openForm('pForm')">+ Add paycheck</button>
+  <button class="bigbtn" onclick="openForm('bForm')">+ Add bill</button>
 </div>
 
-<section id="t-fc">
-  <div class="card"><h2>Next paychecks</h2><div class="fc" id="fc"></div></div>
-</section>
-
-<section id="t-bills" class="hide">
-  <div class="card">
-    <h2>Add a bill or expense</h2>
-    <div class="row">
-      <div><label>What</label><input id="bName" placeholder="Rent, phone, car tag…"></div>
-      <div><label>Amount</label><input id="bAmt" type="number" inputmode="decimal" placeholder="0"></div>
-    </div>
-    <div class="row">
-      <div><label>How often</label><select id="bFreq">
-        <option value="monthly">Every month</option><option value="weekly">Every week</option><option value="biweekly">Every 2 weeks</option>
-        <option value="yearly">Once a year</option><option value="once">One time</option></select></div>
-      <div><label>Next due date</label><input id="bDue" type="date"></div>
-    </div>
-    <button id="bAdd">Add</button>
-  </div>
-  <div class="card"><h2>Bills & expenses</h2><div class="list" id="bList"></div></div>
-</section>
-
-<section id="t-pay" class="hide">
-  <div class="card">
-    <h2>Add a paycheck</h2>
-    <div class="row">
-      <div><label>Date</label><input id="pDate" type="date"></div>
-      <div><label>Take-home amount</label><input id="pAmt" type="number" inputmode="decimal" placeholder="0"></div>
-    </div>
-    <button id="pAdd">Add</button>
-  </div>
-  <div class="card">
-    <h2>Pay schedule</h2>
-    <div class="row">
-      <div><label>Paid</label><select id="freq"><option value="7">Every week</option><option value="14">Every 2 weeks</option><option value="15">Twice a month</option><option value="30">Monthly</option></select></div>
-      <div><label>Next payday</label><input id="nextPay" type="date"></div>
-    </div>
-    <p class="mut" id="payNote"></p>
-  </div>
-  <div class="card"><h2>Past paychecks</h2><div class="list" id="pList"></div></div>
-  <div class="card"><h2>Backup</h2><p class="mut">Data is saved on this phone. Copy a backup now and then.</p>
-    <div class="row"><button id="bkCopy">Copy backup</button><button id="bkRest" style="background:var(--mut)">Restore</button></div><div id="bkArea"></div></div>
-</section>
+<div class="card hide" id="pForm">
+  <h2>Add a paycheck</h2>
+  <label>How much did you take home?</label><input id="pAmt" type="number" inputmode="decimal" placeholder="$0">
+  <label style="margin-top:8px">Date paid</label><input id="pDate" type="date">
+  <div class="row" style="margin-top:10px"><button id="pAdd">Save paycheck</button><button class="cancel" onclick="closeForms()">Cancel</button></div>
 </div>
 
+<div class="card hide" id="bForm">
+  <h2>Add a bill</h2>
+  <label>What is it?</label><input id="bName" placeholder="Rent, phone, car insurance…">
+  <label style="margin-top:8px">How much?</label><input id="bAmt" type="number" inputmode="decimal" placeholder="$0">
+  <label style="margin-top:8px">When is it due next?</label><input id="bDue" type="date">
+  <label style="margin-top:8px">How often?</label><select id="bFreq">
+    <option value="monthly">Every month</option><option value="weekly">Every week</option><option value="biweekly">Every 2 weeks</option>
+    <option value="yearly">Once a year</option><option value="once">Just once</option></select>
+  <div class="row" style="margin-top:10px"><button id="bAdd">Save bill</button><button class="cancel" onclick="closeForms()">Cancel</button></div>
+</div>
+
+<div class="card"><h2>Coming up</h2><div class="fc" id="fc"></div></div>
+
+<div class="card"><h2>My bills</h2><div class="list" id="bList"></div></div>
+
+<div class="card"><h2>My paychecks</h2><div class="list" id="pList"></div>
+  <div class="row" style="margin-top:10px">
+    <div><label>I get paid</label><select id="freq"><option value="7">Every week</option><option value="14">Every 2 weeks</option><option value="15">Twice a month</option><option value="30">Monthly</option></select></div>
+    <div><label>Next payday</label><input id="nextPay" type="date"></div>
+  </div>
+  <p class="mut" id="payNote"></p>
+</div>
+
+<div class="card"><h2>Backup</h2><p class="mut">Everything saves on this phone automatically. Copy a backup once in a while in case you lose your phone.</p>
+  <div class="row"><button id="bkCopy">Copy backup</button><button id="bkRest" class="cancel">Restore</button></div><div id="bkArea"></div></div>
+</div>
+
+<div id="toast" class="hide"></div>
 <script>
 const $=id=>document.getElementById(id);
 const LS="anthony-budget-simple";
@@ -173,28 +166,31 @@ function render(){
       <div class="mut">${typ?`Expected check ~${money(typ)} · <span class="${left<0?"warn":""}">${left<0?"short "+money(-left):money(left)+" left to spend"}</span>`:"Add paychecks to see what's left"}</div>
       ${r.bills.length?`<div class="mut">Pays: ${r.bills.map(x=>`${esc(x.b.name)} ${money(x.b.amt)} on ${fmt(x.due)}`).join(" · ")}</div>`:""}</div>`;
   });
-  if(!S.bills.length)h+=`<p class="mut">No bills yet — add them on the Bills tab.</p>`;
+  if(!S.bills.length)h+=`<p class="mut">Tap “+ Add bill” to add your first bill.</p>`;
   if(typ&&low&&rows[0]&&low<rows[0].set)h+=`<p class="mut warn">Heads up: your smallest recent check (${money(low)}) wouldn't cover this. Try to keep a little extra saved.</p>`;
   $("fc").innerHTML=h;
 
   const fl={monthly:"monthly",weekly:"weekly",biweekly:"every 2 wks",yearly:"yearly",once:"one time"};
-  $("bList").innerHTML=S.bills.length?S.bills.map(b=>{const n=occurrences(b,addMonths(today(),24))[0];return`<div><span>${esc(b.name)}<br><span class="mut">${fl[b.freq]}${n?" · next "+fmt(n):" · done"}</span></span><span class="r">${money(b.amt)} <button class="x" onclick="del('bills','${b.id}')">✕</button></span></div>`}).join(""):'<p class="mut">None yet.</p>';
+  $("bList").innerHTML=S.bills.length?S.bills.map(b=>{const n=occurrences(b,addMonths(today(),24))[0];return`<div><span>${esc(b.name)}<br><span class="mut">${fl[b.freq]}${n?" · next "+fmt(n):" · done"}</span></span><span class="r">${money(b.amt)} <button class="x" onclick="del('bills','${b.id}')">✕</button></span></div>`}).join(""):'<p class="mut">No bills yet.</p>';
   $("pList").innerHTML=S.checks.length?[...S.checks].sort((a,b)=>a.date<b.date?1:-1).map(c=>`<div><span>${fmt(D(c.date))}</span><span class="r">${money(c.amt)} <button class="x" onclick="del('checks','${c.id}')">✕</button></span></div>`).join(""):'<p class="mut">None yet.</p>';
   $("freq").value=S.freq;$("nextPay").value=iso(nextPayday());
   $("payNote").textContent=typ?`Typical check: ${money(typ)} (learned from your recent checks).`:"";
 }
-function del(k,id){S[k]=S[k].filter(x=>x.id!==id);save()}
+let undoT;function del(k,id){const it=S[k].find(x=>x.id===id);S[k]=S[k].filter(x=>x.id!==id);save();
+  const t=$("toast");t.innerHTML=`Deleted ${esc(it.name||money(it.amt)+" check")} <button onclick="undoDel()">Undo</button>`;t.classList.remove("hide");window._undo=()=>{S[k].push(it);save()};clearTimeout(undoT);undoT=setTimeout(()=>t.classList.add("hide"),6000)}
+function undoDel(){window._undo&&window._undo();window._undo=null;$("toast").classList.add("hide")}
 
 $("pDate").value=iso(today());$("bDue").value=iso(today());
-$("pAdd").onclick=()=>{const a=parseFloat($("pAmt").value);if(!a)return;const d=$("pDate").value||iso(today());S.checks.push({id:uid(),date:d,amt:a});
+$("pAdd").onclick=()=>{const a=parseFloat($("pAmt").value);if(!a){$("pAmt").focus();return}const d=$("pDate").value||iso(today());S.checks.push({id:uid(),date:d,amt:a});
   // learn pay schedule from check dates
   const c=[...S.checks].sort((x,y)=>x.date<y.date?1:-1);
   if(c.length>=2){const g=(D(c[0].date)-D(c[1].date))/864e5;S.freq=g<=9?7:g<=14.5?14:g<=17?15:30}
-  S.nextPay=iso(stepPay(D(c[0].date)));$("pAmt").value="";save()};
-$("bAdd").onclick=()=>{const n=$("bName").value.trim(),a=parseFloat($("bAmt").value);if(!n||!a)return;S.bills.push({id:uid(),name:n,amt:a,freq:$("bFreq").value,due:$("bDue").value||iso(today())});$("bName").value=$("bAmt").value="";save()};
+  S.nextPay=iso(stepPay(D(c[0].date)));$("pAmt").value="";closeForms();save();window.scrollTo({top:0,behavior:"smooth"})};
+$("bAdd").onclick=()=>{const n=$("bName").value.trim(),a=parseFloat($("bAmt").value);if(!n){$("bName").focus();return}if(!a){$("bAmt").focus();return}S.bills.push({id:uid(),name:n,amt:a,freq:$("bFreq").value,due:$("bDue").value||iso(today())});$("bName").value=$("bAmt").value="";closeForms();save();window.scrollTo({top:0,behavior:"smooth"})};
 $("freq").onchange=e=>{S.freq=+e.target.value;save()};
 $("nextPay").onchange=e=>{S.nextPay=e.target.value;save()};
-document.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tabs button").forEach(x=>x.classList.toggle("on",x===b));["fc","bills","pay"].forEach(t=>$("t-"+t).classList.toggle("hide",t!==b.dataset.t))});
+function openForm(id){closeForms();$("pDate").value=iso(today());$(id).classList.remove("hide");$(id).scrollIntoView({behavior:"smooth",block:"start"});setTimeout(()=>$(id).querySelector("input").focus(),300)}
+function closeForms(){["pForm","bForm"].forEach(f=>$(f).classList.add("hide"))}
 $("bkCopy").onclick=async()=>{const t=JSON.stringify(S);try{await navigator.clipboard.writeText(t);$("bkArea").innerHTML='<p class="mut">Copied ✓ — paste it into a note or text yourself.</p>'}catch(e){$("bkArea").innerHTML='<textarea style="width:100%;height:80px">'+esc(t)+'</textarea>'}};
 $("bkRest").onclick=()=>{$("bkArea").innerHTML='<textarea id="bkIn" style="width:100%;height:80px" placeholder="Paste backup here"></textarea><button id="bkGo">Restore</button>';$("bkGo").onclick=()=>{try{const d=JSON.parse($("bkIn").value);if(!Array.isArray(d.bills))throw 0;S={...S,...d};save();$("bkArea").innerHTML='<p class="mut">Restored ✓</p>'}catch(e){$("bkArea").innerHTML='<p class="mut warn">That doesn’t look like a backup.</p>'}}};
 render();
