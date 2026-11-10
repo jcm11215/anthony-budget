@@ -97,7 +97,7 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",
 const uid=()=>Math.random().toString(36).slice(2,9);
 const today=()=>{const t=new Date();t.setHours(12,0,0,0);return t};
 
-let S={checks:[],bills:[],freq:14,nextPay:null};
+let S={checks:[],bills:[],freq:7,nextPay:null};
 try{const l=JSON.parse(localStorage.getItem(LS)||"null");if(l)S={...S,...l}}catch(e){}
 function save(){try{localStorage.setItem(LS,JSON.stringify(S))}catch(e){}render()}
 
@@ -110,10 +110,11 @@ function lowCheck(){const c=[...S.checks].sort((a,b)=>a.date<b.date?1:-1).slice(
 function nextPayday(){
   if(S.nextPay&&D(S.nextPay)>=today())return D(S.nextPay);
   const last=[...S.checks].sort((a,b)=>a.date<b.date?1:-1)[0];
-  let d=S.nextPay?D(S.nextPay):last?D(last.date):today();
+  let d=S.nextPay?D(S.nextPay):last?D(last.date):nextFriday();
   while(d<today())d=stepPay(d);
   return d;
 }
+function nextFriday(){const t=today();return addDays(t,(5-t.getDay()+7)%7)}
 function stepPay(d){return S.freq==30?addMonths(d,1):S.freq==15?(d.getDate()<15?new Date(d.getFullYear(),d.getMonth(),15,12):addMonths(new Date(d.getFullYear(),d.getMonth(),1,12),1)):addDays(d,S.freq)}
 function paydays(n){const out=[];let d=nextPayday();for(let i=0;i<n;i++){out.push(d);d=stepPay(d)}return out}
 
@@ -186,7 +187,7 @@ let undoT;function explain(r,typ,dueNow){
   const check=typ||0;
   const parts=[...r.parts].sort((a,b)=>a.due-b.due);
   let h=`<h2>Your ${fmt(r.date)} check, in plain English</h2>`;
-  if(check)h+=`<p>You'll probably get about <b>${money(check)}</b>.</p>`;
+  if(check)h+=`<p>Based on your last few checks, you'll probably get about <b>${money(check)}</b> on Friday.</p>`;
   if(dueNow.length)h+=`<p class="warn">First: ${dueNow.map(x=>`${esc(x.b.name)} (${money(x.b.amt)}) is due ${fmt(x.due)}, before this check`).join("; ")}. Pay that from money you already have.</p>`;
   if(!parts.length)h+=`<p>Nothing needs to be saved from this check.</p>`;
   else{
@@ -212,7 +213,7 @@ $("pAdd").onclick=()=>{const a=parseFloat($("pAmt").value);if(!a){$("pAmt").focu
   // learn pay schedule from check dates
   const c=[...S.checks].sort((x,y)=>x.date<y.date?1:-1);
   if(c.length>=2){const g=(D(c[0].date)-D(c[1].date))/864e5;S.freq=g<=9?7:g<=14.5?14:g<=17?15:30}
-  S.nextPay=iso(stepPay(D(c[0].date)));$("pAmt").value="";closeForms();save();window.scrollTo({top:0,behavior:"smooth"})};
+  S.nextPay=iso(stepPay(D(c[0].date)));if(S.freq<=14){const n=D(S.nextPay);S.nextPay=iso(addDays(n,(5-n.getDay()+7)%7))}$("pAmt").value="";closeForms();save();window.scrollTo({top:0,behavior:"smooth"})};
 $("bAdd").onclick=()=>{const n=$("bName").value.trim(),a=parseFloat($("bAmt").value);if(!n){$("bName").focus();return}if(!a){$("bAmt").focus();return}S.bills.push({id:uid(),name:n,amt:a,freq:$("bFreq").value,due:$("bDue").value||iso(today())});$("bName").value=$("bAmt").value="";closeForms();save();window.scrollTo({top:0,behavior:"smooth"})};
 $("freq").onchange=e=>{S.freq=+e.target.value;save()};
 $("nextPay").onchange=e=>{S.nextPay=e.target.value;save()};
