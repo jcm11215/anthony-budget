@@ -26,6 +26,7 @@ button.x{background:transparent;color:var(--mut);padding:4px 8px;font-weight:400
 .tabs{display:flex;gap:6px;margin-bottom:14px}.tabs button{flex:1;background:var(--card);color:var(--ink);border:1px solid var(--line);font-weight:500;padding:10px 4px}.tabs button.on{background:var(--acc);color:#fff;border-color:var(--acc)}
 #toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 14px;border-radius:10px;display:flex;gap:10px;align-items:center}#toast button{padding:6px 12px}
 .hide{display:none!important}
+#explain p{margin:6px 0}#explain .ln{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-top:1px solid var(--line)}#explain .ln:first-of-type{border-top:0}#explain .left{font-size:20px;font-weight:700;color:var(--acc);margin-top:8px}
 .bigbtn{font-size:18px;padding:16px 10px}
 button.cancel{background:transparent;color:var(--mut);border:1px solid var(--line)}
 button:active{opacity:.8}
@@ -40,6 +41,8 @@ button:active{opacity:.8}
   <div class="big" id="perCheck">$0</div>
   <p id="heroSub">Add your paychecks and bills to get started.</p>
 </div>
+
+<div class="card" id="explain"></div>
 
 <div class="row">
   <button class="bigbtn" onclick="openForm('pForm')">+ Add paycheck</button>
@@ -129,19 +132,19 @@ function occurrences(b,until){
 // (since the previous time it was due). Bills due before the next check are "due now".
 function forecast(n){
   const pds=paydays(n+30);const until=pds[pds.length-1];
-  const set=new Array(pds.length).fill(0),detail=pds.map(()=>[]);let dueNow=[];
+  const set=new Array(pds.length).fill(0),detail=pds.map(()=>[]),parts=pds.map(()=>[]);let dueNow=[];
   S.bills.forEach(b=>{
     occurrences(b,until).forEach(due=>{
       const start=b.freq==="once"?today():back(b,due);
       const idx=pds.map((p,i)=>i).filter(i=>pds[i]<=due&&pds[i]>=addDays(start,-0.5));
       if(!idx.length){dueNow.push({b,due});return}
-      const share=b.amt/idx.length;idx.forEach(i=>{set[i]+=share});
+      const share=b.amt/idx.length;idx.forEach(i=>{set[i]+=share;parts[i].push({b,due,share,n:idx.length,pos:idx.indexOf(i)+1})});
       const last=idx[idx.length-1];
       detail[last].push({b,due});
     });
   });
   // bills due before the next paycheck must come from money he has now
-  return pds.slice(0,n).map((p,i)=>({date:p,set:set[i],bills:detail[i]})).concat([]).map(x=>x).reduce((a,x)=>{a.rows.push(x);return a},{rows:[],dueNow});
+  return pds.slice(0,n).map((p,i)=>({date:p,set:set[i],bills:detail[i],parts:parts[i]})).concat([]).map(x=>x).reduce((a,x)=>{a.rows.push(x);return a},{rows:[],dueNow});
 }
 
 function render(){
@@ -157,6 +160,7 @@ function render(){
     if(typ)sub+=` · leaves ~${money(Math.max(typ-rows[0].set,0))} to spend`;
   }
   $("heroSub").textContent=sub;
+  explain(rows[0],typ,f.dueNow);
 
   let h="";
   if(f.dueNow.length){h+=`<div><div class="top warn"><span>Due before next payday</span><span>${money(f.dueNow.reduce((a,x)=>a+x.b.amt,0))}</span></div><div class="mut">${f.dueNow.map(x=>`${esc(x.b.name)} ${money(x.b.amt)} (${fmt(x.due)})`).join(" · ")} — pay from what you have now.</div></div>`}
@@ -176,7 +180,30 @@ function render(){
   $("freq").value=S.freq;$("nextPay").value=iso(nextPayday());
   $("payNote").textContent=typ?`Typical check: ${money(typ)} (learned from your recent checks).`:"";
 }
-let undoT;function del(k,id){const it=S[k].find(x=>x.id===id);S[k]=S[k].filter(x=>x.id!==id);save();
+let undoT;function explain(r,typ,dueNow){
+  const el=$("explain");
+  if(!r||(!S.bills.length&&!S.checks.length)){el.innerHTML='<h2>Here\u2019s how it works</h2><p>1. Tap <b>+ Add bill</b> for each bill you pay.</p><p>2. Tap <b>+ Add paycheck</b> every time you get paid.</p><p>3. This box will tell you exactly what to set aside and what\u2019s yours to spend.</p>';return}
+  const check=typ||0;
+  const parts=[...r.parts].sort((a,b)=>a.due-b.due);
+  let h=`<h2>Your ${fmt(r.date)} check, in plain English</h2>`;
+  if(check)h+=`<p>You'll probably get about <b>${money(check)}</b>.</p>`;
+  if(dueNow.length)h+=`<p class="warn">First: ${dueNow.map(x=>`${esc(x.b.name)} (${money(x.b.amt)}) is due ${fmt(x.due)}, before this check`).join("; ")}. Pay that from money you already have.</p>`;
+  if(!parts.length)h+=`<p>Nothing needs to be saved from this check.</p>`;
+  else{
+    h+=`<p>Out of it, set this aside:</p>`;
+    parts.forEach(p=>{
+      const why=p.n===1?`pays the whole thing, due ${fmt(p.due)}`:`part ${p.pos} of ${p.n} toward ${money(p.b.amt)} due ${fmt(p.due)}`;
+      h+=`<div class="ln"><span><b>${esc(p.b.name)}</b><br><span class="mut">${why}</span></span><span class="r"><b>${money(p.share)}</b></span></div>`;
+    });
+    h+=`<div class="ln"><span><b>Total to save</b></span><span class="r"><b>${money(r.set)}</b></span></div>`;
+  }
+  if(check){const left=check-r.set;
+    h+=left>=0?`<p class="left">${money(left)} is yours to spend.</p><p class="mut">That's for gas, food, and everything else until your next check.</p>`
+      :`<p class="left warn">You're ${money(-left)} short this check.</p><p class="mut">Save what you can now and catch up on the next one, or look for a bill you can push back.</p>`}
+  else h+=`<p class="mut">Add a paycheck so I can tell you what's left to spend.</p>`;
+  el.innerHTML=h;
+}
+function del(k,id){const it=S[k].find(x=>x.id===id);S[k]=S[k].filter(x=>x.id!==id);save();
   const t=$("toast");t.innerHTML=`Deleted ${esc(it.name||money(it.amt)+" check")} <button onclick="undoDel()">Undo</button>`;t.classList.remove("hide");window._undo=()=>{S[k].push(it);save()};clearTimeout(undoT);undoT=setTimeout(()=>t.classList.add("hide"),6000)}
 function undoDel(){window._undo&&window._undo();window._undo=null;$("toast").classList.add("hide")}
 
