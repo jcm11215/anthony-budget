@@ -4,352 +4,200 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Anthony's Budget</title>
+<link rel="manifest" href="manifest.json"><meta name="theme-color" content="#2f6f4f">
 <style>
 :root{--bg:#f6f5f1;--card:#fff;--ink:#1d1d1b;--mut:#6b6a65;--line:#e4e2db;--acc:#2f6f4f;--warn:#b5532a;--soft:#e9f2ec}
 @media (prefers-color-scheme:dark){:root{--bg:#161615;--card:#212120;--ink:#efede7;--mut:#a09e97;--line:#34332f;--acc:#6fbf94;--warn:#e08a5f;--soft:#24342b}}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,-apple-system,Segoe UI,sans-serif}
-.wrap{max-width:860px;margin:0 auto;padding:18px 14px 60px}
-h1{font-size:24px;margin:4px 0 2px}h2{font-size:16px;margin:0 0 10px}.sub{color:var(--mut);margin:0 0 16px;font-size:13px}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 system-ui,-apple-system,Segoe UI,sans-serif}
+.wrap{max-width:640px;margin:0 auto;padding:16px 14px 60px}
+h1{font-size:22px;margin:4px 0 14px}h2{font-size:16px;margin:0 0 10px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
-.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:14px}
-.kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px}.kpi b{display:block;font-size:22px}.kpi span{color:var(--mut);font-size:12px}
-input,select{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px;width:100%}
-.row{display:flex;gap:8px;flex-wrap:wrap;align-items:end}.row>*{flex:1;min-width:110px}
+.hero{background:var(--acc);color:#fff;border:0;text-align:center}.hero .big{font-size:40px;font-weight:700;line-height:1.1}.hero p{margin:4px 0;opacity:.9}
+input,select{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px;width:100%}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:end;margin-bottom:8px}.row>*{flex:1;min-width:120px}
 label{font-size:12px;color:var(--mut);display:block;margin-bottom:3px}
-button{font:inherit;border:0;border-radius:8px;padding:9px 14px;background:var(--acc);color:#fff;cursor:pointer;font-weight:600}
-button.ghost{background:transparent;color:var(--mut);border:1px solid var(--line);font-weight:500;padding:5px 9px}
-table{width:100%;border-collapse:collapse;font-size:14px}td,th{padding:7px 4px;border-bottom:1px solid var(--line);text-align:left}th{color:var(--mut);font-weight:500;font-size:12px}
-td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
-.bar{height:8px;background:var(--line);border-radius:4px;overflow:hidden}.bar i{display:block;height:100%;background:var(--acc)}.bar i.over{background:var(--warn)}
-.tip{background:var(--soft);border-radius:10px;padding:10px 12px;margin:6px 0;font-size:14px}.tip.w{background:transparent;border:1px solid var(--warn)}
-.tabs{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}.tabs button{background:var(--card);color:var(--ink);border:1px solid var(--line);font-weight:500}.tabs button.on{background:var(--acc);color:#fff;border-color:var(--acc)}
-.hide{display:none}.mut{color:var(--mut);font-size:12px}#status{font-size:12px;color:var(--mut)}
-svg text{fill:var(--mut);font-size:10px}
-#auth{max-width:380px;margin:60px auto}#auth .card{padding:22px}#auth input{margin-bottom:10px}
-.msg{padding:10px 12px;border-radius:10px;margin:8px 0;white-space:pre-wrap;font-size:14px}.msg.me{background:var(--soft);margin-left:40px}.msg.ai{border:1px solid var(--line);margin-right:20px}
-.top{display:flex;justify-content:space-between;align-items:start;gap:10px}
-.chips{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}.chips button{background:var(--bg);color:var(--ink);border:1px solid var(--line);font-weight:500;font-size:13px;padding:6px 10px}
+button{font:inherit;border:0;border-radius:8px;padding:10px 16px;background:var(--acc);color:#fff;cursor:pointer;font-weight:600}
+button.x{background:transparent;color:var(--mut);padding:4px 8px;font-weight:400}
+.list>div{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-top:1px solid var(--line);gap:8px}.list>div:first-child{border-top:0}
+.mut{color:var(--mut);font-size:13px}.r{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.warn{color:var(--warn);font-weight:600}
+.fc>div{padding:10px 0;border-top:1px solid var(--line)}.fc>div:first-child{border-top:0}
+.fc .top{display:flex;justify-content:space-between;font-weight:600}
+.tabs{display:flex;gap:6px;margin-bottom:14px}.tabs button{flex:1;background:var(--card);color:var(--ink);border:1px solid var(--line);font-weight:500;padding:10px 4px}.tabs button.on{background:var(--acc);color:#fff;border-color:var(--acc)}
+.hide{display:none}
 </style>
-<link rel="manifest" href="manifest.json"><meta name="theme-color" content="#2f6f4f">
-
 </head>
 <body>
-<div class="wrap" id="app">
-<div class="top"><div><h1>Anthony's Budget</h1>
-<p class="sub">Log each paycheck. The budget learns what you really bring home and adjusts. <span id="status"></span></p></div>
-</div>
+<div class="wrap">
+<h1>Anthony's Budget</h1>
 
-<div class="kpis">
-  <div class="kpi"><span>Typical check (learned)</span><b id="kTyp">—</b></div>
-  <div class="kpi"><span>Est. monthly income</span><b id="kMon">—</b></div>
-  <div class="kpi"><span>Low-check floor</span><b id="kLow">—</b></div>
-  <div class="kpi"><span>Spent this month</span><b id="kSpent">—</b></div>
+<div class="card hero">
+  <p>Set aside from each check</p>
+  <div class="big" id="perCheck">$0</div>
+  <p id="heroSub">Add your paychecks and bills to get started.</p>
 </div>
 
 <div class="tabs">
-  <button data-t="plan" class="on">This check</button>
-  <button data-t="checks">Paychecks</button>
-  <button data-t="spend">Spending</button>
-  <button data-t="setup">Bills & categories</button>
-  <button data-t="ai">✨ Ask AI</button>
+  <button data-t="fc" class="on">Forecast</button>
+  <button data-t="bills">Bills</button>
+  <button data-t="pay">Paychecks</button>
 </div>
 
-<!-- AI -->
-<section id="t-ai" class="hide">
-  <div class="card"><h2>Built-in AI</h2><p class="mut">Runs right on this phone — free, no account, and your numbers never leave the device. First time downloads the AI (about 1 GB, use Wi-Fi).</p><div id="aiSetup"><button id="aiLoad">Turn on AI</button></div></div>
-  <div class="card">
-    <h2>Scan a pay stub</h2>
-    <p class="mut">Take a photo of your stub — it reads it on this phone and fills in the check for you to confirm.</p>
-    <input id="stubFile" type="file" accept="image/*" capture="environment">
-    <div id="stubOut"></div>
-  </div>
-  <div class="card">
-    <h2>Ask about your money</h2>
-    <div class="chips">
-      <button data-q="Can I afford a $200 purchase this week?">Can I afford $200?</button>
-      <button data-q="How much should I put in savings from my next check?">How much to save?</button>
-      <button data-q="Where am I overspending?">Where am I overspending?</button>
-      <button data-review="1">Monthly check-in</button>
-    </div>
-    <div id="chat"></div>
-    <div class="row" style="margin-top:8px"><div><input id="q" placeholder="Ask anything about your budget…"></div><div style="flex:0"><button id="qSend">Ask</button></div></div>
-  </div>
+<section id="t-fc">
+  <div class="card"><h2>Next paychecks</h2><div class="fc" id="fc"></div></div>
 </section>
 
-<!-- PLAN -->
-<section id="t-plan">
+<section id="t-bills" class="hide">
   <div class="card">
-    <h2>Plan a check</h2>
+    <h2>Add a bill or expense</h2>
     <div class="row">
-      <div><label>Check amount (take-home)</label><input id="planAmt" type="number" inputmode="decimal" placeholder="e.g. 850"></div>
-      <div style="flex:0"><button id="planUse">Use typical</button></div>
+      <div><label>What</label><input id="bName" placeholder="Rent, phone, car tag…"></div>
+      <div><label>Amount</label><input id="bAmt" type="number" inputmode="decimal" placeholder="0"></div>
     </div>
-    <p class="mut" id="planNote" style="margin:8px 0 0"></p>
+    <div class="row">
+      <div><label>How often</label><select id="bFreq">
+        <option value="monthly">Every month</option><option value="weekly">Every week</option><option value="biweekly">Every 2 weeks</option>
+        <option value="yearly">Once a year</option><option value="once">One time</option></select></div>
+      <div><label>Next due date</label><input id="bDue" type="date"></div>
+    </div>
+    <button id="bAdd">Add</button>
   </div>
-  <div class="card"><h2>Where it goes</h2><table id="planTbl"></table></div>
-  <div class="card"><h2>What the budget noticed</h2><div id="tips"></div></div>
+  <div class="card"><h2>Bills & expenses</h2><div class="list" id="bList"></div></div>
 </section>
 
-<!-- CHECKS -->
-<section id="t-checks" class="hide">
+<section id="t-pay" class="hide">
   <div class="card">
     <h2>Add a paycheck</h2>
     <div class="row">
-      <div><label>Date</label><input id="cDate" type="date"></div>
-      <div><label>Take-home amount</label><input id="cAmt" type="number" inputmode="decimal" placeholder="0.00"></div>
-      <div><label>Hours (optional)</label><input id="cHrs" type="number" inputmode="decimal"></div>
-      <div style="flex:0"><button id="cAdd">Add</button></div>
+      <div><label>Date</label><input id="pDate" type="date"></div>
+      <div><label>Take-home amount</label><input id="pAmt" type="number" inputmode="decimal" placeholder="0"></div>
     </div>
+    <button id="pAdd">Add</button>
   </div>
-  <div class="card"><h2>Check history</h2><div id="chart"></div><table id="cTbl"></table></div>
-</section>
-
-<!-- SPEND -->
-<section id="t-spend" class="hide">
-  <div class="card">
-    <h2>Log spending</h2>
-    <div class="row">
-      <div><label>Date</label><input id="sDate" type="date"></div>
-      <div><label>Category</label><select id="sCat"></select></div>
-      <div><label>Amount</label><input id="sAmt" type="number" inputmode="decimal"></div>
-      <div><label>Note</label><input id="sNote" placeholder="optional"></div>
-      <div style="flex:0"><button id="sAdd">Add</button></div>
-    </div>
-  </div>
-  <div class="card"><h2>This month vs. budget</h2><table id="mTbl"></table></div>
-  <div class="card"><h2>Recent</h2><table id="sTbl"></table></div>
-</section>
-
-<!-- SETUP -->
-<section id="t-setup" class="hide">
   <div class="card">
     <h2>Pay schedule</h2>
-    <div class="row"><div><label>How often he's paid</label>
-      <select id="freq"><option value="52">Weekly</option><option value="26">Every 2 weeks</option><option value="24">Twice a month</option><option value="12">Monthly</option></select></div></div>
+    <div class="row">
+      <div><label>Paid</label><select id="freq"><option value="7">Every week</option><option value="14">Every 2 weeks</option><option value="15">Twice a month</option><option value="30">Monthly</option></select></div>
+      <div><label>Next payday</label><input id="nextPay" type="date"></div>
+    </div>
+    <p class="mut" id="payNote"></p>
   </div>
-  <div class="card">
-    <h2>Fixed bills (monthly)</h2>
-    <p class="mut">Paid first out of every check, split evenly across the checks in a month.</p>
-    <table id="bTbl"></table>
-    <div class="row" style="margin-top:8px"><div><input id="bName" placeholder="Bill (rent, phone…)"></div><div><input id="bAmt" type="number" inputmode="decimal" placeholder="$/month"></div><div style="flex:0"><button id="bAdd">Add</button></div></div>
-  </div>
-  <div class="card">
-    <h2>Flexible categories</h2>
-    <p class="mut">What's left after bills is split by these shares. They don't have to add to 100 — they're scaled.</p>
-    <table id="fTbl"></table>
-    <div class="row" style="margin-top:8px"><div><input id="fName" placeholder="Category"></div><div><input id="fPct" type="number" placeholder="% share"></div><div style="flex:0"><button id="fAdd">Add</button></div></div>
-  </div>
+  <div class="card"><h2>Past paychecks</h2><div class="list" id="pList"></div></div>
+  <div class="card"><h2>Backup</h2><p class="mut">Data is saved on this phone. Copy a backup now and then.</p>
+    <div class="row"><button id="bkCopy">Copy backup</button><button id="bkRest" style="background:var(--mut)">Restore</button></div><div id="bkArea"></div></div>
 </section>
 </div>
 
-<script id="state" type="application/json">{"freq":26,"checks":[],"spend":[],"bills":[{"name":"Rent","amt":0},{"name":"Phone","amt":0},{"name":"Car / insurance","amt":0}],"flex":[{"name":"Groceries","pct":25},{"name":"Gas","pct":15},{"name":"Savings","pct":20},{"name":"Fun / eating out","pct":15},{"name":"Other","pct":10},{"name":"Emergency cushion","pct":15}]}</script>
 <script>
 const $=id=>document.getElementById(id);
-const money=n=>(n<0?"-":"")+"$"+Math.abs(n).toLocaleString(undefined,{minimumFractionDigits:0,maximumFractionDigits:0});
-const today=()=>new Date().toISOString().slice(0,10);
-const LS="anthony-budget-v1";
-const DEFAULTS=JSON.parse($("state").textContent);
-let S=JSON.parse(JSON.stringify(DEFAULTS));
-try{const l=JSON.parse(localStorage.getItem(LS)||"null");if(l&&l.flex)S=l}catch(e){}
-function save(){
-  S.savedAt=Date.now();
-  try{localStorage.setItem(LS,JSON.stringify(S));$("status").textContent="Saved on this device"}catch(e){$("status").textContent="Couldn't save"}
-  render();
-}
-// Backup: copy all data as text / paste to restore
-function backupUI(){
-  const c=document.createElement("div");c.className="card";
-  c.innerHTML='<h2>Backup</h2><p class="mut">Your data lives on this device. Copy a backup now and then, or to move to a new phone.</p><div class="row"><div style="flex:0"><button id="bkCopy">Copy backup</button></div><div style="flex:0"><button class="ghost" id="bkShow">Restore…</button></div></div><div id="bkArea"></div>';
-  $("t-setup").appendChild(c);
-  $("bkCopy").onclick=async()=>{const t=JSON.stringify(S);try{await navigator.clipboard.writeText(t);$("bkArea").innerHTML='<p class="mut">Copied ✓ — paste it into a note or text to yourself.</p>'}catch(e){$("bkArea").innerHTML='<textarea style="width:100%;height:90px">'+esc(t)+'</textarea>'}};
-  $("bkShow").onclick=()=>{$("bkArea").innerHTML='<textarea id="bkIn" style="width:100%;height:90px" placeholder="Paste backup here"></textarea><button id="bkGo">Restore</button>';$("bkGo").onclick=()=>{try{const d=JSON.parse($("bkIn").value);if(!d.flex)throw 0;S=d;save();$("bkArea").innerHTML='<p class="mut">Restored ✓</p>'}catch(e){$("bkArea").innerHTML='<p class="mut">⚠️ That doesn\u2019t look like a backup.</p>'}}};
-}
-backupUI();
-// ---- AI ----
-function summary(){
-  const st=stats();
-  return{payFrequencyPerYear:S.freq,typicalCheck:st.typ,lowCheckFloor:st.low,checkSwing:st.sd,payTrendPct:st.trend,
-    estMonthlyIncome:st.n?st.typ*S.freq/12:null,
-    recentChecks:[...S.checks].sort((a,b)=>a.date<b.date?1:-1).slice(0,12).map(c=>({date:c.date,amt:c.amt,hrs:c.hrs})),
-    monthlyBills:S.bills,flexShares:S.flex,
-    spendingLast90Days:S.spend.filter(s=>new Date(s.date)>Date.now()-90*864e5).map(s=>({date:s.date,cat:s.cat,amt:s.amt,note:s.note}))};
-}
-let chatHist=[];
-// On-device AI (WebLLM): free, no key, data never leaves the phone.
-const AI_MODEL="Qwen2.5-1.5B-Instruct-q4f16_1-MLC";
-let engine=null,engineLoading=null;
-function aiReady(){return !!engine}
-async function loadAI(){
-  if(engine)return engine;
-  if(engineLoading)return engineLoading;
-  if(!navigator.gpu)throw new Error("This browser can't run the built-in AI. Use Chrome on Android or a computer with Chrome/Edge.");
-  $("aiSetup").innerHTML='<p class="mut" id="aiProg">Downloading AI… (about 1 GB, only the first time)</p><div class="bar"><i id="aiBar" style="width:0%"></i></div>';
-  engineLoading=(async()=>{
-    const webllm=await import("https://esm.run/@mlc-ai/web-llm");
-    engine=await webllm.CreateMLCEngine(AI_MODEL,{initProgressCallback:p=>{$("aiProg").textContent=p.text;$("aiBar").style.width=Math.round((p.progress||0)*100)+"%"}});
-    $("aiSetup").innerHTML='<p class="mut">✓ AI is ready (runs on this device)</p>';
-    try{localStorage.setItem("ab-ai-ok","1")}catch(e){}
-    return engine;
-  })().catch(e=>{engineLoading=null;$("aiSetup").innerHTML=`<p class="mut">⚠️ ${esc(e.message)}</p><button id="aiLoad">Try again</button>`;$("aiLoad").onclick=()=>loadAI().catch(()=>{});throw e});
-  return engineLoading;
-}
-async function askAI(body){
-  const eng=await loadAI();
-  const sys=`You are a friendly, practical budgeting coach inside Anthony's budget app. He is paid hourly and his paychecks vary. Be concise (under 150 words), plain-spoken, use dollar amounts from his data, never invent numbers. Not a financial advisor. Today is ${today()}.\n\nHis budget data (JSON):\n${JSON.stringify(summary())}`;
-  let messages;
-  if(body.mode==="stub")messages=[{role:"system",content:'Extract pay stub info. Reply with ONLY JSON: {"date":"YYYY-MM-DD or null","net":number take-home/net pay or null,"hours":number total hours or null,"notes":"short note"}'},{role:"user",content:"Pay stub text:\n"+body.text.slice(0,4000)}];
-  else if(body.mode==="review")messages=[{role:"system",content:sys},{role:"user",content:"Give me a short check-in: how my pay has been, where my money goes, anything over budget, and 2-3 specific changes. Short bullets."}];
-  else messages=[{role:"system",content:sys},...(body.history||[]).slice(-6),{role:"user",content:body.question}];
-  const r=await eng.chat.completions.create({messages,temperature:0.3,max_tokens:500});
-  return r.choices[0].message.content;
-}
-function addMsg(role,text){const d=document.createElement("div");d.className="msg "+(role==="user"?"me":"ai");d.textContent=text;$("chat").appendChild(d);d.scrollIntoView({block:"nearest"});return d}
-async function send(q,review){
-  if(!q&&!review)return;
-  addMsg("user",review?"Monthly check-in":q);const p=addMsg("assistant","Thinking…");
-  try{const t=await askAI(review?{mode:"review"}:{mode:"ask",question:q,history:chatHist});p.textContent=t;
-    if(!review){chatHist.push({role:"user",content:q},{role:"assistant",content:t})}}
-  catch(e){p.textContent="⚠️ "+e.message}
-}
-$("qSend").onclick=()=>{const q=$("q").value.trim();$("q").value="";send(q)};
-$("q").onkeydown=e=>{if(e.key==="Enter")$("qSend").click()};
-document.querySelectorAll(".chips button").forEach(b=>b.onclick=()=>send(b.dataset.q,!!b.dataset.review));
-$("stubFile").onchange=async e=>{
-  const f=e.target.files[0];if(!f)return;$("stubOut").innerHTML='<p class="mut">Reading stub…</p>';
-  try{
-    const T=(await import("https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.esm.min.js")).default;
-    const {data:{text}}=await T.recognize(f,"eng",{logger:m=>{if(m.status)$("stubOut").innerHTML=`<p class="mut">${esc(m.status)} ${m.progress?Math.round(m.progress*100)+"%":""}</p>`}});
-    let j={};
-    // quick pattern guess
-    const num=re=>{const m=text.match(re);return m?parseFloat(m[1].replace(/,/g,"")):null};
-    j.net=num(/net\s*pay[^\d$-]*\$?\s*([\d,]+\.\d{2})/i)??num(/net[^\d$-]*\$?\s*([\d,]+\.\d{2})/i);
-    j.hours=num(/(?:total\s*)?hours[^\d]*([\d]+(?:\.\d+)?)/i);
-    if(aiReady()||localStorage.getItem("ab-ai-ok")){
-      try{const t=await askAI({mode:"stub",text});const k=JSON.parse(t.slice(t.indexOf("{"),t.lastIndexOf("}")+1));j={...j,...Object.fromEntries(Object.entries(k).filter(([a,b])=>b!=null))}}catch(err){}
-    }
-    $("stubOut").innerHTML=`<div class="row" style="margin-top:10px"><div><label>Date</label><input id="stD" type="date" value="${/^\d{4}-\d\d-\d\d$/.test(j.date||"")?j.date:today()}"></div><div><label>Take-home</label><input id="stA" type="number" value="${j.net??""}"></div><div><label>Hours</label><input id="stH" type="number" value="${j.hours??""}"></div><div style="flex:0"><button id="stOk">Add check</button></div></div><p class="mut">Double-check the numbers before adding.${j.notes?" "+esc(j.notes):""}</p>`;
-    $("stOk").onclick=()=>{const a=parseFloat($("stA").value);if(!a)return;S.checks.push({id:uid(),date:$("stD").value||today(),amt:a,hrs:parseFloat($("stH").value)||null});$("stubOut").innerHTML='<p class="mut">Added ✓</p>';$("stubFile").value="";save()};
-  }catch(err){$("stubOut").innerHTML=`<p class="mut">⚠️ ${esc(err.message)}</p>`}
-};
+const LS="anthony-budget-simple";
+const money=n=>"$"+Math.round(n).toLocaleString();
+const iso=d=>d.toISOString().slice(0,10);
+const D=s=>new Date(s+"T12:00:00");
+const addDays=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x};
+const addMonths=(d,n)=>{const x=new Date(d);const day=x.getDate();x.setDate(1);x.setMonth(x.getMonth()+n);x.setDate(Math.min(day,new Date(x.getFullYear(),x.getMonth()+1,0).getDate()));return x};
+const fmt=d=>d.toLocaleDateString(undefined,{month:"short",day:"numeric"});
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const uid=()=>Math.random().toString(36).slice(2,9);
+const today=()=>{const t=new Date();t.setHours(12,0,0,0);return t};
 
-// ---- learning ----
-function stats(){
-  const c=[...S.checks].sort((a,b)=>a.date<b.date?1:-1);
-  const amts=c.map(x=>x.amt);
-  if(!amts.length)return{n:0};
-  // weighted recent average: last 8 checks, newer count more
-  const r=amts.slice(0,8);let w=0,s=0;r.forEach((a,i)=>{const wt=r.length-i;w+=wt;s+=a*wt});
-  const typ=s/w;
-  const sorted=[...r].sort((a,b)=>a-b);
-  const low=sorted[Math.floor((sorted.length-1)*0.2)]; // ~20th percentile
-  const mean=r.reduce((a,b)=>a+b,0)/r.length;
-  const sd=Math.sqrt(r.reduce((a,b)=>a+(b-mean)**2,0)/r.length);
-  let trend=0;if(r.length>=4){const h=Math.floor(r.length/2);const newer=r.slice(0,h).reduce((a,b)=>a+b,0)/h;const older=r.slice(h).reduce((a,b)=>a+b,0)/(r.length-h);trend=(newer-older)/older}
-  // detect pay frequency from gaps
-  let freqGuess=null;if(c.length>=3){const gaps=[];for(let i=0;i<Math.min(c.length-1,6);i++)gaps.push((new Date(c[i].date)-new Date(c[i+1].date))/864e5);gaps.sort((a,b)=>a-b);const g=gaps[Math.floor(gaps.length/2)];freqGuess=g<=9?52:g<=15.5?26:g<=17?24:12}
-  return{n:amts.length,typ,low,sd,mean,trend,freqGuess,cv:mean?sd/mean:0};
-}
-const billsMonthly=()=>S.bills.reduce((a,b)=>a+(+b.amt||0),0);
-const perCheckBills=()=>billsMonthly()/(S.freq/12);
-function monthKey(d){return d.slice(0,7)}
-function spentByCat(mk){const o={};S.spend.filter(s=>monthKey(s.date)===mk).forEach(s=>o[s.cat]=(o[s.cat]||0)+s.amt);return o}
+let S={checks:[],bills:[],freq:14,nextPay:null};
+try{const l=JSON.parse(localStorage.getItem(LS)||"null");if(l)S={...S,...l}}catch(e){}
+function save(){try{localStorage.setItem(LS,JSON.stringify(S))}catch(e){}render()}
 
-// Adaptive shares: blend set shares with what he actually spends (last 2 full months + current)
-function adaptiveShares(){
-  const tot=S.flex.reduce((a,f)=>a+(+f.pct||0),0)||1;
-  const base={};S.flex.forEach(f=>base[f.name]=(+f.pct||0)/tot);
-  const months=[...new Set(S.spend.map(s=>monthKey(s.date)))].sort().slice(-3);
-  if(!months.length)return{shares:base,adjusted:false};
-  const sp={};let all=0;
-  S.spend.filter(s=>months.includes(monthKey(s.date))&&base[s.cat]!=null).forEach(s=>{sp[s.cat]=(sp[s.cat]||0)+s.amt;all+=s.amt});
-  if(all<50)return{shares:base,adjusted:false};
-  const out={};let t=0;const protectedCats=/sav|emerg|cushion/i;
-  S.flex.forEach(f=>{const actual=(sp[f.name]||0)/all;const b=base[f.name];
-    // savings never shrinks from spending data; others drift 35% toward reality
-    out[f.name]=protectedCats.test(f.name)?b:b*0.65+actual*0.35;t+=out[f.name]});
-  Object.keys(out).forEach(k=>out[k]/=t);
-  return{shares:out,adjusted:true};
+// ---- paychecks ----
+function typical(){
+  const c=[...S.checks].sort((a,b)=>a.date<b.date?1:-1).slice(0,6);
+  if(!c.length)return 0;let w=0,s=0;c.forEach((x,i)=>{const k=c.length-i;w+=k;s+=x.amt*k});return s/w;
+}
+function lowCheck(){const c=[...S.checks].sort((a,b)=>a.date<b.date?1:-1).slice(0,8).map(x=>x.amt).sort((a,b)=>a-b);return c.length?c[0]:0}
+function nextPayday(){
+  if(S.nextPay&&D(S.nextPay)>=today())return D(S.nextPay);
+  const last=[...S.checks].sort((a,b)=>a.date<b.date?1:-1)[0];
+  let d=S.nextPay?D(S.nextPay):last?D(last.date):today();
+  while(d<today())d=stepPay(d);
+  return d;
+}
+function stepPay(d){return S.freq==30?addMonths(d,1):S.freq==15?(d.getDate()<15?new Date(d.getFullYear(),d.getMonth(),15,12):addMonths(new Date(d.getFullYear(),d.getMonth(),1,12),1)):addDays(d,S.freq)}
+function paydays(n){const out=[];let d=nextPayday();for(let i=0;i<n;i++){out.push(d);d=stepPay(d)}return out}
+
+// ---- bills ----
+function step(b,d){return b.freq==="weekly"?addDays(d,7):b.freq==="biweekly"?addDays(d,14):b.freq==="monthly"?addMonths(d,1):b.freq==="yearly"?addMonths(d,12):null}
+function back(b,d){return b.freq==="weekly"?addDays(d,-7):b.freq==="biweekly"?addDays(d,-14):b.freq==="monthly"?addMonths(d,-1):b.freq==="yearly"?addMonths(d,-12):today()}
+function occurrences(b,until){
+  const out=[];let d=D(b.due);
+  while(step(b,d)&&d<today())d=step(b,d);           // roll recurring bills forward
+  if(b.freq==="once"&&d<today())return out;
+  while(d<=until){out.push(d);const n=step(b,d);if(!n)break;d=n}
+  return out;
+}
+
+// For every upcoming bill, split it across the paychecks that come before it's due
+// (since the previous time it was due). Bills due before the next check are "due now".
+function forecast(n){
+  const pds=paydays(n+30);const until=pds[pds.length-1];
+  const set=new Array(pds.length).fill(0),detail=pds.map(()=>[]);let dueNow=[];
+  S.bills.forEach(b=>{
+    occurrences(b,until).forEach(due=>{
+      const start=b.freq==="once"?today():back(b,due);
+      const idx=pds.map((p,i)=>i).filter(i=>pds[i]<=due&&pds[i]>=addDays(start,-0.5));
+      if(!idx.length){dueNow.push({b,due});return}
+      const share=b.amt/idx.length;idx.forEach(i=>{set[i]+=share});
+      const last=idx[idx.length-1];
+      detail[last].push({b,due});
+    });
+  });
+  // bills due before the next paycheck must come from money he has now
+  return pds.slice(0,n).map((p,i)=>({date:p,set:set[i],bills:detail[i]})).concat([]).map(x=>x).reduce((a,x)=>{a.rows.push(x);return a},{rows:[],dueNow});
 }
 
 function render(){
-  const st=stats();
-  if(st.freqGuess&&!S.freqManual)S.freq=st.freqGuess;
-  $("freq").value=S.freq;
-  $("kTyp").textContent=st.n?money(st.typ):"—";
-  $("kMon").textContent=st.n?money(st.typ*S.freq/12):"—";
-  $("kLow").textContent=st.n?money(st.low):"—";
-  const mk=today().slice(0,7);const sb=spentByCat(mk);
-  $("kSpent").textContent=money(Object.values(sb).reduce((a,b)=>a+b,0));
-
-  // plan
-  const amt=parseFloat($("planAmt").value)||(st.n?st.typ:0);
-  $("planNote").textContent=$("planAmt").value?"":st.n?"Showing the typical check. Type the real amount when it comes in.":"Add a paycheck or type an amount to see the plan.";
-  const bills=perCheckBills();const left=amt-bills;
-  const {shares,adjusted}=adaptiveShares();
-  let h=`<tr><th>Bucket</th><th class="n">This check</th><th class="n">Per month</th></tr>`;
-  S.bills.filter(b=>+b.amt).forEach(b=>{const pc=b.amt/(S.freq/12);h+=`<tr><td>🔒 ${esc(b.name)}</td><td class="n">${money(pc)}</td><td class="n">${money(b.amt)}</td></tr>`});
-  S.flex.forEach(f=>{const v=Math.max(left,0)*shares[f.name];h+=`<tr><td>${esc(f.name)}</td><td class="n">${money(v)}</td><td class="n">${money(v*S.freq/12)}</td></tr>`});
-  h+=`<tr><th>Total</th><th class="n">${money(amt)}</th><th class="n">${money(amt*S.freq/12)}</th></tr>`;
-  $("planTbl").innerHTML=h;
-
-  // tips
-  const tips=[];
-  if(!st.n)tips.push(["Log a few paychecks and the budget will start learning his typical pay, his low weeks, and his pay schedule.",0]);
+  const typ=typical(),low=lowCheck();
+  const f=forecast(8);const rows=f.rows;
+  const avg=rows.length?rows.slice(0,6).reduce((a,r)=>a+r.set,0)/Math.min(6,rows.length):0;
+  $("perCheck").textContent=money(rows[0]?rows[0].set:0);
+  let sub="";
+  if(!S.bills.length&&!S.checks.length)sub="Add your paychecks and bills to get started.";
   else{
-    if(left<0)tips.push([`This check doesn't cover bills — short ${money(-left)}. Pull from the emergency cushion or move a bill to a bigger check.`,1]);
-    if(st.cv>0.12)tips.push([`His checks swing a lot (±${money(st.sd)}). Budget off the low-check floor (${money(st.low)}) and treat anything above it as bonus → savings.`,1]);
-    if(st.trend>0.05)tips.push([`Pay is trending up ~${Math.round(st.trend*100)}% lately. Good time to bump savings.`,0]);
-    if(st.trend<-0.05)tips.push([`Pay is trending down ~${Math.round(-st.trend*100)}% lately. The plan has scaled down with it — watch the fun category.`,1]);
-    if(amt>st.typ*1.1&&$("planAmt").value)tips.push([`This check is ${money(amt-st.typ)} above typical. Consider sending the extra straight to savings.`,0]);
-    if(amt<st.typ*0.9&&$("planAmt").value)tips.push([`This check is ${money(st.typ-amt)} below typical. Bills come first; flexible buckets shrink to fit.`,1]);
-    if(st.freqGuess&&!S.freqManual)tips.push([`Pay schedule detected from his check dates: ${({52:"weekly",26:"every 2 weeks",24:"twice a month",12:"monthly"})[st.freqGuess]}.`,0]);
+    sub=`from your ${fmt(rows[0].date)} check`;
+    if(Math.abs(avg-rows[0].set)>5)sub+=` · about ${money(avg)} per check after that`;
+    if(typ)sub+=` · leaves ~${money(Math.max(typ-rows[0].set,0))} to spend`;
   }
-  if(billsMonthly()===0)tips.push(["Add his fixed bills under Bills & categories so they get covered first.",0]);
-  if(adjusted)tips.push(["Category shares are being nudged toward what he actually spends (savings is never cut).",0]);
-  S.flex.forEach(f=>{const cap=(st.n?st.typ:0)*S.freq/12*0+0;});
-  const totFlexMonth=Math.max((st.n?st.typ:0)*S.freq/12-billsMonthly(),0);
-  S.flex.forEach(f=>{const b=totFlexMonth*shares[f.name];const s=sb[f.name]||0;if(b>0&&s>b)tips.push([`${f.name} is over for the month by ${money(s-b)}.`,1])});
-  $("tips").innerHTML=tips.map(t=>`<div class="tip ${t[1]?"w":""}">${t[0]}</div>`).join("");
+  $("heroSub").textContent=sub;
 
-  // checks
-  const cs=[...S.checks].sort((a,b)=>a.date<b.date?1:-1);
-  $("cTbl").innerHTML=`<tr><th>Date</th><th class="n">Amount</th><th class="n">Hours</th><th class="n">vs typical</th><th></th></tr>`+cs.map(c=>`<tr><td>${c.date}</td><td class="n">${money(c.amt)}</td><td class="n">${c.hrs||""}</td><td class="n">${st.n?(c.amt>=st.typ?"+":"")+money(c.amt-st.typ):""}</td><td class="n"><button class="ghost" onclick="del('checks','${c.id}')">✕</button></td></tr>`).join("");
-  chart(cs.slice(0,12).reverse(),st);
+  let h="";
+  if(f.dueNow.length){h+=`<div><div class="top warn"><span>Due before next payday</span><span>${money(f.dueNow.reduce((a,x)=>a+x.b.amt,0))}</span></div><div class="mut">${f.dueNow.map(x=>`${esc(x.b.name)} ${money(x.b.amt)} (${fmt(x.due)})`).join(" · ")} — pay from what you have now.</div></div>`}
+  rows.forEach(r=>{
+    const left=typ?typ-r.set:null;
+    h+=`<div><div class="top"><span>${fmt(r.date)}</span><span>Save ${money(r.set)}</span></div>
+      <div class="mut">${typ?`Expected check ~${money(typ)} · <span class="${left<0?"warn":""}">${left<0?"short "+money(-left):money(left)+" left to spend"}</span>`:"Add paychecks to see what's left"}</div>
+      ${r.bills.length?`<div class="mut">Pays: ${r.bills.map(x=>`${esc(x.b.name)} ${money(x.b.amt)} on ${fmt(x.due)}`).join(" · ")}</div>`:""}</div>`;
+  });
+  if(!S.bills.length)h+=`<p class="mut">No bills yet — add them on the Bills tab.</p>`;
+  if(typ&&low&&rows[0]&&low<rows[0].set)h+=`<p class="mut warn">Heads up: your smallest recent check (${money(low)}) wouldn't cover this. Try to keep a little extra saved.</p>`;
+  $("fc").innerHTML=h;
 
-  // spending
-  $("sCat").innerHTML=[...S.flex.map(f=>f.name),...S.bills.map(b=>b.name)].map(n=>`<option>${esc(n)}</option>`).join("");
-  $("mTbl").innerHTML=`<tr><th>Category</th><th class="n">Spent</th><th class="n">Budget</th><th style="width:30%"></th></tr>`+S.flex.map(f=>{const b=totFlexMonth*shares[f.name],s=sb[f.name]||0,p=b?Math.min(s/b,1)*100:0;return`<tr><td>${esc(f.name)}</td><td class="n">${money(s)}</td><td class="n">${money(b)}</td><td><div class="bar"><i class="${s>b?"over":""}" style="width:${p}%"></i></div></td></tr>`}).join("");
-  $("sTbl").innerHTML=`<tr><th>Date</th><th>Category</th><th>Note</th><th class="n">Amount</th><th></th></tr>`+[...S.spend].sort((a,b)=>a.date<b.date?1:-1).slice(0,25).map(s=>`<tr><td>${s.date}</td><td>${esc(s.cat)}</td><td>${esc(s.note||"")}</td><td class="n">${money(s.amt)}</td><td class="n"><button class="ghost" onclick="del('spend','${s.id}')">✕</button></td></tr>`).join("");
-
-  // setup
-  $("bTbl").innerHTML=S.bills.map((b,i)=>`<tr><td>${esc(b.name)}</td><td class="n"><input type="number" value="${b.amt||""}" style="width:110px" onchange="S.bills[${i}].amt=+this.value;save()"></td><td class="n"><button class="ghost" onclick="S.bills.splice(${i},1);save()">✕</button></td></tr>`).join("")+`<tr><th>Total</th><th class="n">${money(billsMonthly())}/mo</th><th></th></tr>`;
-  $("fTbl").innerHTML=S.flex.map((f,i)=>`<tr><td>${esc(f.name)}</td><td class="n"><input type="number" value="${f.pct}" style="width:80px" onchange="S.flex[${i}].pct=+this.value;save()"> %</td><td class="n mut">${Math.round(shares[f.name]*100)}% used</td><td class="n"><button class="ghost" onclick="S.flex.splice(${i},1);save()">✕</button></td></tr>`).join("");
+  const fl={monthly:"monthly",weekly:"weekly",biweekly:"every 2 wks",yearly:"yearly",once:"one time"};
+  $("bList").innerHTML=S.bills.length?S.bills.map(b=>{const n=occurrences(b,addMonths(today(),24))[0];return`<div><span>${esc(b.name)}<br><span class="mut">${fl[b.freq]}${n?" · next "+fmt(n):" · done"}</span></span><span class="r">${money(b.amt)} <button class="x" onclick="del('bills','${b.id}')">✕</button></span></div>`}).join(""):'<p class="mut">None yet.</p>';
+  $("pList").innerHTML=S.checks.length?[...S.checks].sort((a,b)=>a.date<b.date?1:-1).map(c=>`<div><span>${fmt(D(c.date))}</span><span class="r">${money(c.amt)} <button class="x" onclick="del('checks','${c.id}')">✕</button></span></div>`).join(""):'<p class="mut">None yet.</p>';
+  $("freq").value=S.freq;$("nextPay").value=iso(nextPayday());
+  $("payNote").textContent=typ?`Typical check: ${money(typ)} (learned from your recent checks).`:"";
 }
-function chart(cs,st){
-  if(cs.length<2){$("chart").innerHTML="";return}
-  const W=600,H=140,p=24,max=Math.max(...cs.map(c=>c.amt))*1.1,bw=(W-p*2)/cs.length;
-  let s=`<svg viewBox="0 0 ${W} ${H}" width="100%" style="margin-bottom:8px">`;
-  cs.forEach((c,i)=>{const h=(c.amt/max)*(H-p-14);s+=`<rect x="${p+i*bw+3}" y="${H-p-h}" width="${bw-6}" height="${h}" rx="3" fill="var(--acc)" opacity=".8"/><text x="${p+i*bw+bw/2}" y="${H-8}" text-anchor="middle">${c.date.slice(5)}</text>`});
-  const y=H-p-(st.typ/max)*(H-p-14);s+=`<line x1="${p}" x2="${W-p}" y1="${y}" y2="${y}" stroke="var(--warn)" stroke-dasharray="4 3"/><text x="${W-p}" y="${y-4}" text-anchor="end">typical ${money(st.typ)}</text></svg>`;
-  $("chart").innerHTML=s;
-}
-function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
-const uid=()=>Math.random().toString(36).slice(2,9);
 function del(k,id){S[k]=S[k].filter(x=>x.id!==id);save()}
 
-$("cDate").value=$("sDate").value=today();
-$("cAdd").onclick=()=>{const a=parseFloat($("cAmt").value);if(!a)return;S.checks.push({id:uid(),date:$("cDate").value||today(),amt:a,hrs:parseFloat($("cHrs").value)||null});$("cAmt").value=$("cHrs").value="";save()};
-$("sAdd").onclick=()=>{const a=parseFloat($("sAmt").value);if(!a)return;S.spend.push({id:uid(),date:$("sDate").value||today(),cat:$("sCat").value,amt:a,note:$("sNote").value});$("sAmt").value=$("sNote").value="";save()};
-$("bAdd").onclick=()=>{const n=$("bName").value.trim();if(!n)return;S.bills.push({name:n,amt:+$("bAmt").value||0});$("bName").value=$("bAmt").value="";save()};
-$("fAdd").onclick=()=>{const n=$("fName").value.trim();if(!n)return;S.flex.push({name:n,pct:+$("fPct").value||5});$("fName").value=$("fPct").value="";save()};
-$("freq").onchange=e=>{S.freq=+e.target.value;S.freqManual=true;save()};
-$("planAmt").oninput=render;
-$("planUse").onclick=()=>{$("planAmt").value="";render()};
-document.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tabs button").forEach(x=>x.classList.toggle("on",x===b));["plan","checks","spend","setup","ai"].forEach(t=>$("t-"+t).classList.toggle("hide",t!==b.dataset.t))});
-
+$("pDate").value=iso(today());$("bDue").value=iso(today());
+$("pAdd").onclick=()=>{const a=parseFloat($("pAmt").value);if(!a)return;const d=$("pDate").value||iso(today());S.checks.push({id:uid(),date:d,amt:a});
+  // learn pay schedule from check dates
+  const c=[...S.checks].sort((x,y)=>x.date<y.date?1:-1);
+  if(c.length>=2){const g=(D(c[0].date)-D(c[1].date))/864e5;S.freq=g<=9?7:g<=14.5?14:g<=17?15:30}
+  S.nextPay=iso(stepPay(D(c[0].date)));$("pAmt").value="";save()};
+$("bAdd").onclick=()=>{const n=$("bName").value.trim(),a=parseFloat($("bAmt").value);if(!n||!a)return;S.bills.push({id:uid(),name:n,amt:a,freq:$("bFreq").value,due:$("bDue").value||iso(today())});$("bName").value=$("bAmt").value="";save()};
+$("freq").onchange=e=>{S.freq=+e.target.value;save()};
+$("nextPay").onchange=e=>{S.nextPay=e.target.value;save()};
+document.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tabs button").forEach(x=>x.classList.toggle("on",x===b));["fc","bills","pay"].forEach(t=>$("t-"+t).classList.toggle("hide",t!==b.dataset.t))});
+$("bkCopy").onclick=async()=>{const t=JSON.stringify(S);try{await navigator.clipboard.writeText(t);$("bkArea").innerHTML='<p class="mut">Copied ✓ — paste it into a note or text yourself.</p>'}catch(e){$("bkArea").innerHTML='<textarea style="width:100%;height:80px">'+esc(t)+'</textarea>'}};
+$("bkRest").onclick=()=>{$("bkArea").innerHTML='<textarea id="bkIn" style="width:100%;height:80px" placeholder="Paste backup here"></textarea><button id="bkGo">Restore</button>';$("bkGo").onclick=()=>{try{const d=JSON.parse($("bkIn").value);if(!Array.isArray(d.bills))throw 0;S={...S,...d};save();$("bkArea").innerHTML='<p class="mut">Restored ✓</p>'}catch(e){$("bkArea").innerHTML='<p class="mut warn">That doesn’t look like a backup.</p>'}}};
 render();
-$("aiLoad").onclick=()=>loadAI().catch(()=>{});
-try{if(localStorage.getItem("ab-ai-ok"))setTimeout(()=>loadAI().catch(()=>{}),1500)}catch(e){}
 </script>
 </body>
 </html>
