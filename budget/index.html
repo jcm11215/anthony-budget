@@ -31,20 +31,13 @@ svg text{fill:var(--mut);font-size:10px}
 .chips{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}.chips button{background:var(--bg);color:var(--ink);border:1px solid var(--line);font-weight:500;font-size:13px;padding:6px 10px}
 </style>
 <link rel="manifest" href="manifest.json"><meta name="theme-color" content="#2f6f4f">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 </head>
 <body>
-<div id="auth" class="hide"><div class="card">
-  <h1>Anthony's Budget</h1><p class="sub">Sign in to see your budget on any device.</p>
-  <input id="aEmail" type="email" placeholder="Email" autocomplete="email">
-  <input id="aPass" type="password" placeholder="Password (6+ characters)" autocomplete="current-password">
-  <div class="row"><button id="aIn">Sign in</button><button id="aUp" class="ghost">Create account</button></div>
-  <p class="mut" id="aMsg"></p>
-</div></div>
-<div class="wrap hide" id="app">
+<div class="wrap" id="app">
 <div class="top"><div><h1>Anthony's Budget</h1>
 <p class="sub">Log each paycheck. The budget learns what you really bring home and adjusts. <span id="status"></span></p></div>
-<button class="ghost" id="signOut">Sign out</button></div>
+</div>
 
 <div class="kpis">
   <div class="kpi"><span>Typical check (learned)</span><b id="kTyp">—</b></div>
@@ -157,40 +150,21 @@ const today=()=>new Date().toISOString().slice(0,10);
 const LS="anthony-budget-v1";
 const DEFAULTS=JSON.parse($("state").textContent);
 let S=JSON.parse(JSON.stringify(DEFAULTS));
-const SB_URL="https://avwcauhuuimmsalavrzy.supabase.co";
-const SB_KEY="sb_publishable_nlNNpXhAfvZfEhBp111mSQ_Ixj7bA-a";
-const sb=supabase.createClient(SB_URL,SB_KEY);
-let me=null,saveTimer=null;
-
+try{const l=JSON.parse(localStorage.getItem(LS)||"null");if(l&&l.flex)S=l}catch(e){}
 function save(){
   S.savedAt=Date.now();
-  try{localStorage.setItem(LS,JSON.stringify(S))}catch(e){}
-  render();
-  if(!me)return;
-  clearTimeout(saveTimer);$("status").textContent="Saving…";
-  saveTimer=setTimeout(async()=>{
-    const {error}=await sb.from("budget_state").upsert({user_id:me.id,data:S,updated_at:new Date().toISOString()});
-    $("status").textContent=error?"Couldn't save — check connection":"Saved";
-  },800);
-}
-async function loadState(){
-  const {data}=await sb.from("budget_state").select("data").eq("user_id",me.id).maybeSingle();
-  let local=null;try{local=JSON.parse(localStorage.getItem(LS)||"null")}catch(e){}
-  if(data&&data.data&&data.data.flex)S=data.data;
-  else if(local&&local.flex){S=local;save();}
+  try{localStorage.setItem(LS,JSON.stringify(S));$("status").textContent="Saved on this device"}catch(e){$("status").textContent="Couldn't save"}
   render();
 }
-async function onAuth(session){
-  me=session?session.user:null;
-  $("auth").classList.toggle("hide",!!me);$("app").classList.toggle("hide",!me);
-  if(me)await loadState();
+// Backup: copy all data as text / paste to restore
+function backupUI(){
+  const c=document.createElement("div");c.className="card";
+  c.innerHTML='<h2>Backup</h2><p class="mut">Your data lives on this device. Copy a backup now and then, or to move to a new phone.</p><div class="row"><div style="flex:0"><button id="bkCopy">Copy backup</button></div><div style="flex:0"><button class="ghost" id="bkShow">Restore…</button></div></div><div id="bkArea"></div>';
+  $("t-setup").appendChild(c);
+  $("bkCopy").onclick=async()=>{const t=JSON.stringify(S);try{await navigator.clipboard.writeText(t);$("bkArea").innerHTML='<p class="mut">Copied ✓ — paste it into a note or text to yourself.</p>'}catch(e){$("bkArea").innerHTML='<textarea style="width:100%;height:90px">'+esc(t)+'</textarea>'}};
+  $("bkShow").onclick=()=>{$("bkArea").innerHTML='<textarea id="bkIn" style="width:100%;height:90px" placeholder="Paste backup here"></textarea><button id="bkGo">Restore</button>';$("bkGo").onclick=()=>{try{const d=JSON.parse($("bkIn").value);if(!d.flex)throw 0;S=d;save();$("bkArea").innerHTML='<p class="mut">Restored ✓</p>'}catch(e){$("bkArea").innerHTML='<p class="mut">⚠️ That doesn\u2019t look like a backup.</p>'}}};
 }
-sb.auth.getSession().then(({data})=>onAuth(data.session));
-sb.auth.onAuthStateChange((ev,session)=>{if(ev==="SIGNED_IN"||ev==="SIGNED_OUT")onAuth(session)});
-$("aIn").onclick=async()=>{$("aMsg").textContent="Signing in…";const {error}=await sb.auth.signInWithPassword({email:$("aEmail").value.trim(),password:$("aPass").value});$("aMsg").textContent=error?error.message:""};
-$("aUp").onclick=async()=>{$("aMsg").textContent="Creating account…";const {data,error}=await sb.auth.signUp({email:$("aEmail").value.trim(),password:$("aPass").value,options:{emailRedirectTo:location.origin+location.pathname}});$("aMsg").textContent=error?error.message:(data.session?"":"Account made. Tap the confirm link in the email (if it opens an error page, that\u2019s fine), then come back and sign in.")};
-$("signOut").onclick=()=>sb.auth.signOut();
-
+backupUI();
 // ---- AI ----
 function summary(){
   const st=stats();
